@@ -37,9 +37,10 @@ public:
 	
 	void AddPoiOnMinimap(AActor* Actor);
 	
-	UFUNCTION(BlueprintCallable, Category = "Minimap")
-	void SetMinimapWidget(UMM_Widget* Widget);
-	UMM_Widget* GetMinimapWidget() const { return MinimapWidget; }
+	UFUNCTION(BlueprintCallable)
+	UMM_Widget* GetMinimapWidget();
+	UFUNCTION(BlueprintCallable)
+	UMM_Widget* GetMapWidget();
 	
 	float GetMapSize();
 	
@@ -61,6 +62,15 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category = "Minimap|References", meta = (AllowPrivateAccess = true))
 	UTextureRenderTarget2D* RenderTarget = nullptr;
+	
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category = "Minimap|References", meta = (AllowPrivateAccess = true))
+	TSubclassOf<UMM_Widget> WidgetClass;
+	
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category = "Minimap|References", meta = (AllowPrivateAccess = true))
+	UMaterialInterface* MinimapMaterial;
+	
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category = "Minimap|References", meta = (AllowPrivateAccess = true))
+	UMaterialInterface* MapMaterial;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Minimap|Settings", meta = (AllowPrivateAccess = true))
 	float OrthoWidth = 1536.0f;
@@ -94,8 +104,6 @@ private:
 
 	UPROPERTY()
 	TMap<AActor*, UMM_POI_Widget*> PoisActors;
-	UPROPERTY()
-	TMap<AActor*, UMM_POI_Widget*> PoisActorsMap;
 
 	bool bMinimapInputEnabled = false;
 	uint32 ZoomBindingHandle = 0;

@@ -60,6 +60,21 @@ void AMM_Actor::OnConstruction(const FTransform& Transform)
 	SceneCaptureComponent->TextureTarget = RenderTarget;
 }
 
+void AMM_Actor::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	// Set refresh timer
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle,this,&AMM_Actor::UpdateMinimap,RefreshRate,true);
+	
+	SetMinimapInputEnabled(bUseInput);
+	
+	MinimapWidget = CreateWidget<UMM_Widget>(GetWorld(), WidgetClass);
+	MinimapWidget->InitializeMinimapWidget(this);
+	CheckForUninitializedPois();
+
+}
+
 void AMM_Actor::SetOrthoWidth(float NewOrthoWidth)
 {
 	OrthoWidth = FMath::Max(NewOrthoWidth, 1.0f);
@@ -76,7 +91,6 @@ float AMM_Actor::GetUnrealUnitsPerMapUnit() const
 	{
 		return FMath::Max(OrthoWidth, KINDA_SMALL_NUMBER);
 	}
-
 	return FMath::Max(OrthoWidth / MapSize, KINDA_SMALL_NUMBER);
 }
 
@@ -87,13 +101,6 @@ void AMM_Actor::AddPoiOnMinimap(AActor* Actor)
 	{
 		PoisActors[Actor] = MinimapWidget->AddPoi(Actor);
 	}
-}
-
-void AMM_Actor::SetMinimapWidget(UMM_Widget* Widget)
-{
-	MinimapWidget = Widget;
-	MinimapWidget->InitializeMinimapWidget(this);
-	CheckForUninitializedPois();
 }
 
 float AMM_Actor::GetMapSize()
@@ -130,7 +137,6 @@ void AMM_Actor::SetMinimapInputEnabled(bool bEnable)
 		{
 			BindMinimapInput();
 		}
-		
 	}
 	else
 	{
@@ -190,16 +196,7 @@ void AMM_Actor::HandleToggleMap()
 	OnToggleMap.Broadcast();
 }
 
-void AMM_Actor::BeginPlay()
-{
-	Super::BeginPlay();
-	
-	// Set refresh timer
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle,this,&AMM_Actor::UpdateMinimap,RefreshRate,true);
-	
-	SetMinimapInputEnabled(bUseInput);
-	
-}
+
 
 void AMM_Actor::UpdateMinimap()
 {
